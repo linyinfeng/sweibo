@@ -1,0 +1,11 @@
+#!/bin/bash
+
+function random()
+{
+    echo `head -10 /dev/urandom | cksum | cut -f1 -d" "`
+}
+
+function random_sha1()
+{
+    echo `head -10 /dev/urandom | sha1sum | cut -f1 -d" "`
+}

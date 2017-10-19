@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ ! ( -d ~/.sweibo ) ]]; then
+    mkdir ~/.sweibo
+fi
+source ./auth
+echo $CODE
+
+# TODO
+

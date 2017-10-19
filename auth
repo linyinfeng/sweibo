@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#EXAMPLE
+# https://api.weibo.com/oauth2/default.html?code=64efca4a5385c96327f6042883527575
+# https://api.weibo.com/oauth2/default.html?error_uri=%2Foauth2%2Fauthorize&error=access_denied&error_description=user%20denied%20your%20request.&error_code=21330
+
+source ./random
+
+export CODE
+
+CLIENT_ID='2276631549'
+REDIRECT_URI='https://api.weibo.com/oauth2/default.html'
+
+if [ -z $1 ]; then
+    CODE_FILE="$HOME/.sweibo/code"
+else
+    CODE_FILE=$1
+fi
+
+if [ -f $CODE_FILE ]; then
+    echo "Loading exiting code"
+    CODE=$(cat $CODE_FILE)
+else
+    echo $'To authorize this app, visit: \n'
+    echo "https://api.weibo.com/oauth2/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&response_type=code"
+    echo -n $'\nEnter the response uri: '
+    read input
+    CODE=$(echo $input | sed 's/.*?code=\([[:alnum:]]*\).*/\1/' | xargs)
+    if [ $CODE = $input ]; then
+        echo "Error, can't get authorization code"
+        CODE=''
+    else
+        echo $CODE > $CODE_FILE
+    fi
+fi
+
+unset CLIENT_ID
+unset REDIRECT_URI
+
