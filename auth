@@ -6,34 +6,70 @@
 
 source ./random
 
+export CLIENT_ID='2276631549'
+export CLIENT_SECRET='8dc4d53f11fd526170382c4cfa2a0224'
+export REDIRECT_URI='https://api.weibo.com/oauth2/default.html'
 export CODE
+export ACCESS_TOKEN
 
-CLIENT_ID='2276631549'
-REDIRECT_URI='https://api.weibo.com/oauth2/default.html'
+AUTH_FILE="$CONFIG_DIR/auth"
 
-if [ -z $1 ]; then
-    CODE_FILE="$HOME/.sweibo/code"
-else
-    CODE_FILE=$1
-fi
-
-if [ -f $CODE_FILE ]; then
-    echo "Loading exiting code"
-    CODE=$(cat $CODE_FILE)
-else
+function get_new_code()
+{
     echo $'To authorize this app, visit: \n'
     echo "https://api.weibo.com/oauth2/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&response_type=code"
     echo -n $'\nEnter the response uri: '
     read input
-    CODE=$(echo $input | sed 's/.*?code=\([[:alnum:]]*\).*/\1/' | xargs)
+    CODE=$(echo $input | sed 's/.*?code=\([[:alnum:]]*\).*/\1/' | xargs) # xargs for triming the output
     if [ $CODE = $input ]; then
         echo "Error, can't get authorization code"
-        CODE=''
+        CODE=""
+        exit 1
     else
-        echo $CODE > $CODE_FILE
+        printf "New code get: %s\n" $CODE
     fi
+}
+
+function get_new_access_token()
+{
+    echo "Getting access token..."
+    response=$(curl "https://api.weibo.com/oauth2/access_token" \
+         -d "client_id=$CLIENT_ID" \
+         -d "client_secret=$CLIENT_SECRET" \
+         -d "grant_type=authorization_code" \
+         -d "code=$CODE" \
+         -d "redirect_uri=$REDIRECT_URI")
+    printf "Response: $s\n" $response
+
+    ACCESS_TOKEN=$(echo $response | jq ".access_token")
+    if [ $ACCESS_TOKEN == null ]; then
+        echo "Error, can't get access_token"
+        exit 1
+    else
+        ACCESS_TOKEN=$(echo $ACCESS_TOKEN | tr -d '"')
+        printf "New access_token get: %s\n" $ACCESS_TOKEN
+    fi
+    unset response
+}
+
+if [ -f $AUTH_FILE ]; then
+    echo "Loading exiting code..."
+    CODE=$(awk '$1=="code" {print $2}' $AUTH_FILE)
+    echo "Loading exiting access_token..."
+    ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
 fi
 
-unset CLIENT_ID
-unset REDIRECT_URI
+# TODO check
 
+if [ -z $CODE ]; then
+    ACCESS_TOKEN=""
+    get_new_code
+    echo "code $CODE" > $AUTH_FILE
+fi
+
+if [ -z $ACCESS_TOKEN ]; then
+    get_new_access_token
+    echo "access_token $ACCESS_TOKEN" >> $AUTH_FILE
+fi
+
+    

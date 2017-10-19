@@ -1,10 +1,31 @@
 #!/bin/bash
 
-if [[ ! ( -d ~/.sweibo ) ]]; then
-    mkdir ~/.sweibo
+export CONFIG_DIR="$HOME/.sweibo"
+if [[ ! ( -d $CONFIG_DIR ) ]]; then
+    mkdir CONFIG_DIR
 fi
-source ./auth
-echo $CODE
+
+function print_usage()
+{
+    echo "Usage: TODO"
+}
+
+function clean()
+{
+    rm -rf $CONFIG_DIR/*
+}
+
+function auth()
+{
+    source ./auth
+    echo "Authorization information:"
+    printf "\tcode         $CODE\n"
+    printf "\taccess_token $ACCESS_TOKEN\n"
+}
 
 # TODO
-
+case $1 in
+    clean) clean;;
+    auth) auth;;
+    *) print_usage;;
+esac
