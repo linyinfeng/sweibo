@@ -3,6 +3,7 @@
 export CONFIG_DIR="$HOME/.sweibo"
 MODULE_DIR="./modules"
 AUTH_FILE="$CONFIG_DIR/auth"
+export SWEIBO_DIR=$(pwd)
 export ACCESS_TOKEN=""
 if [[ ! ( -d $CONFIG_DIR ) ]]; then
     mkdir $CONFIG_DIR
@@ -41,16 +42,19 @@ case $1 in
     *) :;; # Do nothing
 esac
 
-echo "---------- Initializing ----------"
-get_access_token
-while [ -z $ACCESS_TOKEN ];
-do
-    auth
+function auth_until_valid()
+{
     get_access_token
-done
-printf "Access token loaded: %s\n" $ACCESS_TOKEN
-echo "---------- Finish ----------------"
+    while [ -z $ACCESS_TOKEN ];
+    do
+        echo "Invalid authorization, please follow the instructions to authorize the tool"
+        auth
+        get_access_token
+    done
+    printf "Access token loaded: %s\n" $ACCESS_TOKEN
+}
 
+auth_until_valid
 EXIT_FLAG=""
 while [ -n EXIT_FLAG ];
 do
@@ -58,10 +62,16 @@ do
     read input
     case $(echo $input | awk '{print $1}') in
         q) exit;;
+        auth)
+            second=$(echo $input | awk '{print $2}')
+            if [[ ( -n $second ) && ( $second = "force" ) ]]; then
+                rm $AUTH_FILE; ACCESS_TOKEN="";
+            fi
+            auth_until_valid;;
         '') :;;
         *)
             call=$(echo $input | xargs)
-            eval "$MODULE_DIR/$call"
+            (eval "$MODULE_DIR/$call")
             ;;
     esac
 done
