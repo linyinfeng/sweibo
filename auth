@@ -30,11 +30,15 @@ response=$(curl "https://api.weibo.com/oauth2/access_token" \
         -d "redirect_uri=$REDIRECT_URI")
 printf "Response: "; echo $response
 
-if [ $(echo response | jq ".error") != "null" ]; then
-    printf "Error: "; echo $(echo response | jq ".error_description" | tr -d '"');
+error=$(echo response | jq ".error") 
+if [[ ( -n $error ) && ( $error != "null" ) ]]; then
+    printf "Error: "; echo $(echo response | jq ".error" | tr -d '"');
     exit 1
 fi
 ACCESS_TOKEN=$(echo $response | jq ".access_token" | tr -d '"')
+USER_UID=$(echo $response | jq ".uid" | tr -d '"')
 printf "New access_token get: %s\n" $ACCESS_TOKEN
+printf "UID: %s\n" $USER_UID
 echo "access_token $ACCESS_TOKEN" >> $AUTH_FILE
+echo "uid $USER_UID" >> $AUTH_FILE
 
