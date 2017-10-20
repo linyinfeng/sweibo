@@ -30,7 +30,7 @@ response=$(curl "https://api.weibo.com/oauth2/access_token" \
         -d "code=$CODE" \
         -d "redirect_uri=$REDIRECT_URI")
 printf "Response: "; echo $response
-echo $response | check_error
+echo $response | check_error || exit 1
 
 ACCESS_TOKEN=$(echo $response | jq ".access_token" | tr -d '"')
 USER_UID=$(echo $response | jq ".uid" | tr -d '"')

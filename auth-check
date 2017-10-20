@@ -3,8 +3,10 @@
 source ./common
 
 echo "Checking authorization validation..."
-response=$(curl -d "access_token=$ACCESS_TOKEN" 'https://api.weibo.com/oauth2/get_token_info')
+response=$(curl -s -d "access_token=$ACCESS_TOKEN" 'https://api.weibo.com/oauth2/get_token_info')
 
-echo $response | check_error
+echo $response | check_error || exit 1
 
-echo $response | jq
+user_uid=$(echo $response | jq ".uid")
+printf "\tUID: %s\n" $user_uid
+echo "Valid authorization"
