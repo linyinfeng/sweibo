@@ -1,0 +1,4 @@
+#!/bin/bash
+
+response=$(curl -d "access_token=$ACCESS_TOKEN" 'https://api.weibo.com/oauth2/get_token_info')
+echo $response | jq

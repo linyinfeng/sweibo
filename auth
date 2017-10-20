@@ -6,70 +6,35 @@
 
 source ./random
 
-export CLIENT_ID='2276631549'
-export CLIENT_SECRET='8dc4d53f11fd526170382c4cfa2a0224'
-export REDIRECT_URI='https://api.weibo.com/oauth2/default.html'
-export CODE
-export ACCESS_TOKEN
+CLIENT_ID='2276631549'
+CLIENT_SECRET='8dc4d53f11fd526170382c4cfa2a0224'
+REDIRECT_URI='https://api.weibo.com/oauth2/default.html'
 
-AUTH_FILE="$CONFIG_DIR/auth"
+AUTH_FILE=$1
 
-function get_new_code()
-{
-    echo $'To authorize this app, visit: \n'
-    echo "https://api.weibo.com/oauth2/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&response_type=code"
-    echo -n $'\nEnter the response uri: '
-    read input
-    CODE=$(echo $input | sed 's/.*?code=\([[:alnum:]]*\).*/\1/' | xargs) # xargs for triming the output
-    if [ $CODE = $input ]; then
-        echo "Error, can't get authorization code"
-        CODE=""
-        exit 1
-    else
-        printf "New code get: %s\n" $CODE
-    fi
-}
+echo $'To authorize this app, visit: \n'
+echo "https://api.weibo.com/oauth2/authorize?client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&response_type=code"
+echo -n $'\nEnter the response uri: '
+read input
+CODE=$(echo $input | sed 's/.*?code=\([[:alnum:]]*\).*/\1/' | xargs) # xargs for triming the output
+if [ $CODE = $input ]; then echo "Error, can't get authorization code"; exit 1; fi
+printf "New code get: %s\n" $CODE
+echo "code $CODE" > $AUTH_FILE
+echo "Getting access token..."
 
-function get_new_access_token()
-{
-    echo "Getting access token..."
-    response=$(curl "https://api.weibo.com/oauth2/access_token" \
-         -d "client_id=$CLIENT_ID" \
-         -d "client_secret=$CLIENT_SECRET" \
-         -d "grant_type=authorization_code" \
-         -d "code=$CODE" \
-         -d "redirect_uri=$REDIRECT_URI")
-    printf "Response: $s\n" $response
+response=$(curl "https://api.weibo.com/oauth2/access_token" \
+        -d "client_id=$CLIENT_ID" \
+        -d "client_secret=$CLIENT_SECRET" \
+        -d "grant_type=authorization_code" \
+        -d "code=$CODE" \
+        -d "redirect_uri=$REDIRECT_URI")
+printf "Response: "; echo $response
 
-    ACCESS_TOKEN=$(echo $response | jq ".access_token")
-    if [ $ACCESS_TOKEN == null ]; then
-        echo "Error, can't get access_token"
-        exit 1
-    else
-        ACCESS_TOKEN=$(echo $ACCESS_TOKEN | tr -d '"')
-        printf "New access_token get: %s\n" $ACCESS_TOKEN
-    fi
-    unset response
-}
-
-if [ -f $AUTH_FILE ]; then
-    echo "Loading exiting code..."
-    CODE=$(awk '$1=="code" {print $2}' $AUTH_FILE)
-    echo "Loading exiting access_token..."
-    ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
+if [ $(echo response | jq ".error") != "null" ]; then
+    printf "Error: "; echo $(echo response | jq ".error_description" | tr -d '"');
+    exit 1
 fi
+ACCESS_TOKEN=$(echo $response | jq ".access_token" | tr -d '"')
+printf "New access_token get: %s\n" $ACCESS_TOKEN
+echo "access_token $ACCESS_TOKEN" >> $AUTH_FILE
 
-# TODO check
-
-if [ -z $CODE ]; then
-    ACCESS_TOKEN=""
-    get_new_code
-    echo "code $CODE" > $AUTH_FILE
-fi
-
-if [ -z $ACCESS_TOKEN ]; then
-    get_new_access_token
-    echo "access_token $ACCESS_TOKEN" >> $AUTH_FILE
-fi
-
-    

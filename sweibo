@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export CONFIG_DIR="$HOME/.sweibo"
+export AUTH_FILE="$CONFIG_DIR/auth"
 if [[ ! ( -d $CONFIG_DIR ) ]]; then
     mkdir CONFIG_DIR
 fi
@@ -17,15 +18,29 @@ function clean()
 
 function auth()
 {
-    source ./auth
-    echo "Authorization information:"
-    printf "\tcode         $CODE\n"
-    printf "\taccess_token $ACCESS_TOKEN\n"
+    ./auth $AUTH_FILE
 }
 
-# TODO
+function get_access_token()
+{
+    ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
+    # TODO Validate
+}
+
+export ACCESS_TOKEN
+get_access_token
+while [ -z $ACCESS_TOKEN ];
+do
+    auth
+    get_access_token
+done
+printf "Access token loaded: %s\n" $ACCESS_TOKEN
+
 case $1 in
-    clean) clean;;
-    auth) auth;;
-    *) print_usage;;
+    clean)
+        clean $@;;
+    auth)
+        auth;;
+    *)
+        print_usage;;
 esac
