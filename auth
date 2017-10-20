@@ -5,6 +5,7 @@
 # https://api.weibo.com/oauth2/default.html?error_uri=%2Foauth2%2Fauthorize&error=access_denied&error_description=user%20denied%20your%20request.&error_code=21330
 
 source ./random
+source ./common
 
 CLIENT_ID='2276631549'
 CLIENT_SECRET='8dc4d53f11fd526170382c4cfa2a0224'
@@ -29,12 +30,8 @@ response=$(curl "https://api.weibo.com/oauth2/access_token" \
         -d "code=$CODE" \
         -d "redirect_uri=$REDIRECT_URI")
 printf "Response: "; echo $response
+echo $response | check_error
 
-error=$(echo response | jq ".error") 
-if [[ ( -n $error ) && ( $error != "null" ) ]]; then
-    printf "Error: "; echo $(echo response | jq ".error" | tr -d '"');
-    exit 1
-fi
 ACCESS_TOKEN=$(echo $response | jq ".access_token" | tr -d '"')
 USER_UID=$(echo $response | jq ".uid" | tr -d '"')
 printf "New access_token get: %s\n" $ACCESS_TOKEN

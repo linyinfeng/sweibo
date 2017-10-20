@@ -1,0 +1,11 @@
+#!/bin/bash
+
+function check_error() {
+    local error_msg=$(jq ".error")
+    if [[ ( -n $error_msg ) && ( $error_msg != null ) ]]; then
+        printf "Error: "
+        echo $error_msg
+        exit 1
+    fi
+}
+

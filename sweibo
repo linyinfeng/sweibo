@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export CONFIG_DIR="$HOME/.sweibo"
-export AUTH_FILE="$CONFIG_DIR/auth"
+AUTH_FILE="$CONFIG_DIR/auth"
 export ACCESS_TOKEN=""
 if [[ ! ( -d $CONFIG_DIR ) ]]; then
     mkdir $CONFIG_DIR
