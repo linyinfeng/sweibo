@@ -55,11 +55,15 @@ function auth_until_valid()
 }
 
 auth_until_valid
+
+HISTFILE="$SWEIBO_DIR/history"
+set -o history
+real_history_file="$SWEIBO_DIR/real_history"
+
 EXIT_FLAG=""
 while [ -n EXIT_FLAG ];
 do
-    printf "(SWeibo) "
-    read input
+    read -ep '(SWeibo) ' input
     case $(echo $input | awk '{print $1}') in
         q) exit;;
         auth)
@@ -67,11 +71,14 @@ do
             if [[ ( -n $second ) && ( $second = "force" ) ]]; then
                 rm $AUTH_FILE; ACCESS_TOKEN="";
             fi
-            auth_until_valid;;
+            auth_until_valid
+            echo $input >> $real_history_file; cp $real_history_file $HISTFILE
+            ;;
         '') :;;
         *)
             call=$(echo $input | xargs)
             (eval "$MODULE_DIR/$call")
+            echo $input >> $real_history_file; cp $real_history_file $HISTFILE
             ;;
     esac
 done
