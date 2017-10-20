@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source $SWEIBO_DIR/common
+
+response=$(curl -s "https://api.weibo.com/2/users/show.json?access_token=$ACCESS_TOKEN&screen_name=$1")
+
+echo $response | check_error || exit 1
+echo $response | jq

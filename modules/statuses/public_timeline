@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source ./common
+
+response=$(curl -s "https://api.weibo.com/2/statuses/public_timeline.json?access_token=$ACCESS_TOKEN")
+
+echo $response | check_error || exit 1
+
+echo $response 

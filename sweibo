@@ -70,7 +70,7 @@ do
             second=$(echo $input | awk '{print $2}')
             if [[ ( -n $second ) && ( $second = "force" ) ]]; then
                 rm $AUTH_FILE; ACCESS_TOKEN="";
-            fi
+            fiaccess_token 	true 	string 	采用OAuth授权方式为必填参数，OAuth授权后获得。 
             auth_until_valid
             echo $input >> $real_history_file; cp $real_history_file $HISTFILE
             ;;
