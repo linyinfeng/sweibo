@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export CONFIG_DIR="$HOME/.sweibo"
+MODULE_DIR="./modules"
 AUTH_FILE="$CONFIG_DIR/auth"
 export ACCESS_TOKEN=""
 if [[ ! ( -d $CONFIG_DIR ) ]]; then
@@ -31,14 +32,14 @@ function get_access_token()
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    # TODO Validate
+    # TODO check the access
 }
 
-if [[ ( -n $1 ) && ( $1 = "clean" ) ]]; then
-    echo "Cleaning..."
-    clean
-    exit
-fi
+case $1 in
+    clean) clean; exit;;
+    auth) auth; exit;;
+    *) :;; # Do nothing
+esac
 
 echo "---------- Initializing ----------"
 get_access_token
@@ -50,9 +51,17 @@ done
 printf "Access token loaded: %s\n" $ACCESS_TOKEN
 echo "---------- Finish ----------------"
 
-case $1 in
-    auth)
-        auth;;
-    *)
-        print_usage;;
-esac
+EXIT_FLAG=""
+while [ -n EXIT_FLAG ];
+do
+    printf "(SWeibo) "
+    read input
+    case $(echo $input | awk '{print $1}') in
+        q) exit;;
+        '') :;;
+        *)
+            call=$(echo $input | xargs)
+            eval "$MODULE_DIR/$call"
+            ;;
+    esac
+done
