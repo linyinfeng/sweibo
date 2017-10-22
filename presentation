@@ -18,7 +18,8 @@ function display_status {
     local user_data=$(echo "$data" | jq ".user")
     display_user_brief "$user_data"
     echo -en "\e[1m"
-    echo "$data" | jq -r ".text" | sed "s/^/    /g"
+    # delete U+200B at end of message
+    echo "$data" | jq -r ".text" | sed 's/^/    /g' | sed 's/\xe2\x80\x8b$//g'
     echo -en "\e[0m"
 
     
