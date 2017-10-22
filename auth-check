@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./common
+source $SWEIBO_DIR/common
 
 echo "Checking authorization validation..."
 response=$(curl -s -d "access_token=$ACCESS_TOKEN" 'https://api.weibo.com/oauth2/get_token_info')

@@ -1,9 +1,10 @@
 #!/bin/bash
 
+BIN_FILE=$(readlink -f $0)
+export SWEIBO_DIR=$(dirname $BIN_FILE)
+MODULE_DIR="$SWEIBO_DIR/modules"
 export CONFIG_DIR="$HOME/.sweibo"
-MODULE_DIR="./modules"
 AUTH_FILE="$CONFIG_DIR/auth"
-export SWEIBO_DIR=$(pwd)
 export ACCESS_TOKEN=""
 if [[ ! ( -d $CONFIG_DIR ) ]]; then
     mkdir $CONFIG_DIR
@@ -25,7 +26,7 @@ function clean()
 
 function auth()
 {
-    ./auth $AUTH_FILE
+    $SWEIBO_DIR/auth $AUTH_FILE
 }
 
 function get_access_token()
@@ -33,18 +34,12 @@ function get_access_token()
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    if ./auth-check; then
+    if $SWEIBO_DIR/auth-check; then
         :
     else
         ACCESS_TOKEN=''
     fi
 }
-
-case $1 in
-    clean) clean; exit;;
-    auth) auth; exit;;
-    *) :;; # Do nothing
-esac
 
 function auth_until_valid()
 {
@@ -58,32 +53,30 @@ function auth_until_valid()
     printf "Access token loaded: %s\n" $ACCESS_TOKEN
 }
 
+function handle_input()
+{
+    input=$@
+    case $(echo $input | awk '{print $1}') in
+    q|quit|exit) exit;;
+    auth)
+        second=$(echo $input | awk '{print $2}')
+        if [[ ( -n $second ) && ( $second = "force" ) ]]; then
+            rm $AUTH_FILE; ACCESS_TOKEN=""
+        fi
+        auth_until_valid
+        ;;
+    '') :;;
+    *)
+        call=$(echo $input | xargs)
+        (eval "$MODULE_DIR/$call")
+        ;;
+    esac
+}
+
 auth_until_valid
 
-HISTFILE="$SWEIBO_DIR/history"
-set -o history
-real_history_file="$SWEIBO_DIR/real_history"
-
-EXIT_FLAG=""
-while [ -n EXIT_FLAG ];
+while true;
 do
     read -ep '(SWeibo) ' input
-    case $(echo $input | awk '{print $1}') in
-        q) exit;;
-        auth)
-            second=$(echo $input | awk '{print $2}')
-            if [[ ( -n $second ) && ( $second = "force" ) ]]; then
-                rm $AUTH_FILE; ACCESS_TOKEN=""
-            fi
-            fiaccess_token 	true 	string 	采用OAuth授权方式为必填参数，OAuth授权后获得。 
-            auth_until_valid
-            echo $input >> $real_history_file; cp $real_history_file $HISTFILE
-            ;;
-        '') :;;
-        *)
-            call=$(echo $input | xargs)
-            (eval "$MODULE_DIR/$call")
-            echo $input >> $real_history_file; cp $real_history_file $HISTFILE
-            ;;
-    esac
+    handle_input $input
 done
