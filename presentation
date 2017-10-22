@@ -14,6 +14,8 @@ function display_user {
 }
 
 function display_status {
+    cols=$(tput cols)
+
     local data=$1
     local user_data=$(echo "$data" | jq ".user")
     display_user_brief "$user_data"
@@ -23,14 +25,24 @@ function display_status {
     echo -en "\e[0m"
 
     
-    local pic=$(echo "$data" | jq -r ".original_pic")
+    local original_pic=$(echo "$data" | jq -r ".original_pic")
+    local pic=$(echo "$data" | jq -r ".thumbnail_pic")
     if [ "$pic" != null ]; then
-        echo "    Picture: $pic"
+        local pic_width
+        let "pic_width = cols / 2"
+        echo "    Picture: $original_pic"
+        temp_file=$(mktemp)
+        curl -s "$pic" -o $temp_file
+        if [ -f "/usr/bin/catimg" ]; then
+            catimg -w $pic_width $temp_file | sed 's/^/            /g'
+        elif [ -f "$SWEIBO_DIR/catimg" ]; then
+            "$SWEIBO_DIR/catimg" -w $pic_width $temp_file | sed 's/^/            /g'
+        fi
+        rm "$temp_file"
     fi
 
-    cols=$(tput cols)
     local date=$(echo "$data" | jq -r ".created_at")
-    printf "%${cols}s\n" "Created at $date"
+    printf "\n%${cols}s\n" "Created at $date"
 }
 
 function display_comment {
