@@ -2,10 +2,11 @@
 
 # | check_error || exit 1
 function check_error() {
-    local error_msg=$(jq ".error")
+    local error_msg
+    error_msg=$(jq ".error")
     if [[ ( -n $error_msg ) && ( $error_msg != null ) ]]; then
         printf "Error: "
-        echo $error_msg
+        echo "$error_msg"
         exit 1
     fi
 }
