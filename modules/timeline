@@ -1,44 +1,79 @@
 #!/bin/bash
 
-source $SWEIBO_DIR/common
+source "$SWEIBO_DIR/common"
 
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
+info_file="$SWEIBO_CONFIG_DIR/timeline_info"
 refresh="false"
 
 options=
+
+page="1"
+count="20"
 
 while getopts rc:p: FLAG; do
     case $FLAG in
         r) refresh="true";;
         c)
-            options="$options -c $OPTARG"
-            count_overrided="true"
+            count="$OPTARG"
             ;;
-        p) options="$options -p $OPTARG";;
+        p)
+            page="$OPTARG"
+            ;;
         *) :;;
     esac
 done
+shift $((OPTIND-1))
+options="$options -p $page"
+options="$options -c $count"
 
+type="home"
+if [ -n "$1" ]; then type="$1"; fi
+time=$(date | tr ' ' '-')
+file_type=$(awk '$1=="type" {print $2}' "$info_file")
+file_page=$(awk '$1=="page" {print $2}' "$info_file")
+file_time=$(awk '$1=="time" {print $2}' "$info_file")
+file_count=$(awk '$1=="count" {print $2}' "$info_file")
+
+if [ "$file_type" != "$type" ]; then refresh="true"; fi
+if [ "$file_page" != "$page" ]; then refresh="true"; fi
+if [ "$file_count" != "$count" ]; then refresh="true"; fi
 if [ ! -f "$status_file" ]; then refresh="true"; fi
-if [ -n "$options" ]; then refresh="true"; fi
 
 if [ $refresh = "true" ]; then
-    response=$("$SWEIBO_MODULE_DIR/statuses/home_timeline" $options)
+    echo "Fetching..."
+
+    response=$("$SWEIBO_MODULE_DIR/api/statuses/${type}_timeline" $options)
     if [ -z "$response" ]; then
         echo -e "\e[31mFailed to get timeline, exiting...\e[0m"
         exit 1
     fi
     echo "$response" | jq ".statuses[]" -c > "$status_file"
+    echo "type $type" > "$info_file";  file_type="$type"
+    echo "page $page" >> "$info_file"; file_page="$page"
+    echo "count $count" >> "$info_file"; file_count="$count"
+    echo "time $time" >> "$info_file"; file_time="$time"
+
+    echo "Timeline fetched"
 fi
 
-statuses_count=$(wc -l $status_file | awk '{print $1}')
 
-i=1
-while (( i <= statuses_count )); do
-    printf "\e[1m[$i]\e[0m  "
+statuses_count=$(wc -l "$status_file" | awk '{print $1}')
 
-    data=$(sed "${i}q;d" $status_file)
-    display_status "$data"
+function main()
+{
+    echo -e "\e[32;1mTimeline: $file_type - page $file_page ( $statuses_count / $file_count per page )\e[0m"
+    echo -e "\e[32;1mUpdated at: $(echo "$file_time" | tr '-' ' ')\e[0m"
     breakline "\e[32m"
-    let ++i
-done | less -R
+
+    i=1
+    while (( i <= statuses_count )); do
+        echo -en "\e[1m[$i]\e[0m  "
+
+        data=$(sed "${i}q;d" "$status_file")
+        display_status "$data"
+        breakline "\e[32m"
+        let ++i
+    done
+}
+main | less -R
