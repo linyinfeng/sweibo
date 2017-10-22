@@ -19,5 +19,5 @@ fi
 
 response=$(curl -s "https://api.weibo.com/oauth2/get_token_info" -d "$params")
 
-echo $response | check_error || exit 1
-echo $response
+echo "$response" | check_error || exit 1
+echo "$response"

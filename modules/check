@@ -10,6 +10,6 @@ if [ -z "$response" ]; then
     exit 1
 fi
 
-user_uid=$(echo $response | jq ".uid")
+user_uid=$(echo "$response" | jq ".uid")
 printf "\tUID: %s\n" "$user_uid"
-echo -e "\e[32m3Valid authorization\e[0m"
+echo -e "\e[32mValid authorization\e[0m"

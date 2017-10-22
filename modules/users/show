@@ -21,5 +21,5 @@ fi
 
 response=$(curl -s "https://api.weibo.com/2/users/show.json?$params")
 
-echo $response | check_error || exit 1
-echo $response
+echo "$response" | check_error || exit 1
+echo "$response"

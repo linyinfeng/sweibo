@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function display_user_brief() {
+    local data=$1
+    local name=$(echo "$data" | jq -r ".screen_name")
+    local id=$(echo "$data" | jq -r ".id")
+    echo -en "User: \e[36m$name\e[0m"
+    local description=$(echo "$data" | jq -r ".description")
+    echo -en " - $description\n\n"
+}
+
+function display_user {
+    local data=$1
+}
+
+function display_status {
+    local data=$1
+    local user_data=$(echo "$data" | jq ".user")
+    display_user_brief "$user_data"
+    echo -en "\e[1m"
+    echo "$data" | jq -r ".text" | sed "s/^/    /g"
+    echo -en "\e[0m"
+
+    
+    local pic=$(echo "$data" | jq -r ".original_pic")
+    if [ "$pic" != null ]; then
+        echo "    Picture: $pic"
+    fi
+
+    cols=$(tput cols)
+    local date=$(echo "$data" | jq -r ".created_at")
+    printf "%${cols}s\n" "Created at $date"
+}
+
+function display_comment {
+    :
+}

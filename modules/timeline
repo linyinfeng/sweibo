@@ -5,17 +5,25 @@ source $SWEIBO_DIR/common
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
 refresh="false"
 
-while getopts r FLAG; do
+options=
+
+while getopts rc:p: FLAG; do
     case $FLAG in
         r) refresh="true";;
+        c)
+            options="$options -c $OPTARG"
+            count_overrided="true"
+            ;;
+        p) options="$options -p $OPTARG";;
         *) :;;
     esac
 done
 
 if [ ! -f "$status_file" ]; then refresh="true"; fi
+if [ -n "$options" ]; then refresh="true"; fi
 
 if [ $refresh = "true" ]; then
-    response=$("$SWEIBO_MODULE_DIR/statuses/public_timeline")
+    response=$("$SWEIBO_MODULE_DIR/statuses/home_timeline" $options)
     if [ -z "$response" ]; then
         echo -e "\e[31mFailed to get timeline, exiting...\e[0m"
         exit 1
@@ -29,7 +37,10 @@ breakline "\e[32m"
 
 i=1
 while (( i <= statuses_count )); do
-    sed "${i}q;d" $status_file | cat
+    printf "\e[1m[$i]\e[0m  "
+
+    data=$(sed "${i}q;d" $status_file)
+    display_status "$data"
     breakline "\e[32m"
     let ++i
 done

@@ -28,11 +28,11 @@ response=$(curl -s "https://api.weibo.com/oauth2/access_token" \
         -d "grant_type=authorization_code" \
         -d "code=$CODE" \
         -d "redirect_uri=$REDIRECT_URI")
-printf "Response: "; echo $response
-echo $response | check_error || exit 1
+printf "Response: "; echo "$response"
+echo "$response" | check_error || exit 1
 
-ACCESS_TOKEN=$(echo $response | jq ".access_token" | tr -d '"')
-USER_UID=$(echo $response | jq ".uid" | tr -d '"')
+ACCESS_TOKEN=$(echo "$response" | jq -r ".access_token")
+USER_UID=$(echo "$response" | jq -r ".uid")
 printf "New access_token get: %s\n" $ACCESS_TOKEN
 printf "UID: %s\n" $USER_UID
 echo "access_token $ACCESS_TOKEN" >> $AUTH_FILE
