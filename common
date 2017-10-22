@@ -4,8 +4,27 @@
 function check_error() {
     local error_msg
     error_msg=$(jq ".error")
-    if [[ ( -n $error_msg ) && ( $error_msg != null ) ]]; then
-        printf "Error: %s" "$error_msg" 1>&2 1>/dev/null
+    if [[ ( -n "$error_msg" ) && ( $error_msg != null ) ]]; then
+        >&2 printf "\e[31mError: %s\n\e[0m" "$error_msg"
         exit 1
+    fi
+}
+
+function breakline() {
+    local i
+
+    echo -en "$1"
+
+    cols=$(tput cols)
+    i=0
+    while (( i < $cols )); do
+        echo -n "-"
+        let ++i
+    done
+
+    if [ -n "$2" ]; then
+        echo -e "$2"
+    else
+        echo -e "\e[0m"
     fi
 }

@@ -65,7 +65,7 @@ function handle_input()
     q|quit|exit) exit;;
     auth)
         second=$(echo $input | awk '{print $2}')
-        if [[ ( -n $second ) && ( $second = "force" ) ]]; then
+        if [[ ( -n "$second" ) && ( $second = "force" ) ]]; then
             rm $AUTH_FILE; ACCESS_TOKEN=""
         fi
         auth_until_valid
@@ -78,10 +78,18 @@ function handle_input()
     esac
 }
 
-auth_until_valid
-
-while true;
-do
-    read -ep '(SWeibo) ' input
-    handle_input $input
-done
+if [ -z $1 ]; then
+    handle_input "help"
+elif [[ ( -n "$1" ) && ( "$1" = "shell" ) ]]; then
+    auth_until_valid
+    while true; do
+        read -ep '(SWeibo) ' input
+        handle_input $input
+    done
+else
+    # Do not check
+    if [ -f $AUTH_FILE ]; then
+        ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
+    fi
+    handle_input $@
+fi

@@ -22,7 +22,7 @@ printf "New code get: %s\n" $CODE
 echo "code $CODE" > $AUTH_FILE
 echo "Getting access token..."
 
-response=$(curl "https://api.weibo.com/oauth2/access_token" \
+response=$(curl -s "https://api.weibo.com/oauth2/access_token" \
         -d "client_id=$CLIENT_ID" \
         -d "client_secret=$CLIENT_SECRET" \
         -d "grant_type=authorization_code" \

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm -r $SWEIBO_CONFIG_DIR

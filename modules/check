@@ -12,4 +12,4 @@ fi
 
 user_uid=$(echo $response | jq ".uid")
 printf "\tUID: %s\n" "$user_uid"
-echo "Valid authorization"
+echo -e "\e[32m3Valid authorization\e[0m"
