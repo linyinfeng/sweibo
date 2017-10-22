@@ -1,1 +1,12 @@
-../auth-check
+#!/bin/bash
+
+source $SWEIBO_DIR/common
+
+echo "Checking authorization validation..."
+
+response=$($MODULE_DIR/oauth2/get_token_info)
+if [ -z $response ]; then exit 1; fi
+
+user_uid=$(echo $response | jq ".uid")
+printf "\tUID: %s\n" $user_uid
+echo "Valid authorization"

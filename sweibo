@@ -26,7 +26,7 @@ function clean()
 
 function auth()
 {
-    $SWEIBO_DIR/auth $AUTH_FILE
+    $MODULE_DIR/auth $AUTH_FILE
 }
 
 function get_access_token()
@@ -34,7 +34,7 @@ function get_access_token()
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    if $SWEIBO_DIR/auth-check; then
+    if $MODULE_DIR/check; then
         :
     else
         ACCESS_TOKEN=''
