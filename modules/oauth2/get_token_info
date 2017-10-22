@@ -12,7 +12,7 @@ while getopts t FLAG; do
     esac
 done
 
-if [ $test = true ]; then
+if [ "$test" = "true" ]; then
     echo "curl -s \"https://api.weibo.com/oauth2/get_token_info\" -d \"$params\""
     exit 1
 fi
@@ -20,4 +20,4 @@ fi
 response=$(curl -s "https://api.weibo.com/oauth2/get_token_info" -d "$params")
 
 echo $response | check_error || exit 1
-echo $response | jq
+echo $response

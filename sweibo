@@ -1,13 +1,18 @@
 #!/bin/bash
 
-BIN_FILE=$(readlink -f $0)
-export SWEIBO_DIR=$(dirname $BIN_FILE)
-MODULE_DIR="$SWEIBO_DIR/modules"
-export CONFIG_DIR="$HOME/.sweibo"
-AUTH_FILE="$CONFIG_DIR/auth"
-export ACCESS_TOKEN=""
-if [[ ! ( -d $CONFIG_DIR ) ]]; then
-    mkdir $CONFIG_DIR
+export SWEIBO_DIR
+export SWEIBO_MODULE_DIR
+export SWEIBO_CONFIG_DIR
+export ACCESS_TOKEN
+
+BIN_FILE=$(readlink -f "$0")
+SWEIBO_DIR=$(dirname "$BIN_FILE")
+SWEIBO_MODULE_DIR="$SWEIBO_DIR/modules"
+SWEIBO_CONFIG_DIR="$HOME/.sweibo"
+AUTH_FILE="$SWEIBO_CONFIG_DIR/auth"
+
+if [[ ! ( -d $SWEIBO_CONFIG_DIR ) ]]; then
+    mkdir "$SWEIBO_CONFIG_DIR"
 fi
 
 function print_usage()
@@ -17,8 +22,8 @@ function print_usage()
 
 function clean()
 {
-    if [ -d $CONFIG_DIR ]; then
-        rm -rv $CONFIG_DIR
+    if [ -d "$SWEIBO_CONFIG_DIR" ]; then
+        rm -rv "$SWEIBO_CONFIG_DIR"
     else
         echo "Already clean"
     fi
@@ -26,7 +31,7 @@ function clean()
 
 function auth()
 {
-    $MODULE_DIR/auth $AUTH_FILE
+    "$SWEIBO_MODULE_DIR/auth" "$AUTH_FILE"
 }
 
 function get_access_token()
@@ -34,7 +39,7 @@ function get_access_token()
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    if $MODULE_DIR/check; then
+    if "$SWEIBO_MODULE_DIR/check"; then
         :
     else
         ACCESS_TOKEN=''
@@ -46,7 +51,7 @@ function auth_until_valid()
     get_access_token
     while [ -z $ACCESS_TOKEN ];
     do
-        echo "Invalid authorization, please follow the instructions to authorize the tool"
+        echo -e "\e[32mPlease follow the instructions to authorize the tool\e[0m"
         auth
         get_access_token
     done
@@ -68,7 +73,7 @@ function handle_input()
     '') :;;
     *)
         call=$(echo $input | xargs)
-        (eval "$MODULE_DIR/$call")
+        (eval "$SWEIBO_MODULE_DIR/$call")
         ;;
     esac
 }

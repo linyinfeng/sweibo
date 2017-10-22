@@ -5,8 +5,7 @@ function check_error() {
     local error_msg
     error_msg=$(jq ".error")
     if [[ ( -n $error_msg ) && ( $error_msg != null ) ]]; then
-        printf "Error: "
-        echo "$error_msg"
+        printf "Error: %s" "$error_msg" 1>&2 1>/dev/null
         exit 1
     fi
 }

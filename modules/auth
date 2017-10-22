@@ -4,7 +4,6 @@
 # https://api.weibo.com/oauth2/default.html?code=64efca4a5385c96327f6042883527575
 # https://api.weibo.com/oauth2/default.html?error_uri=%2Foauth2%2Fauthorize&error=access_denied&error_description=user%20denied%20your%20request.&error_code=21330
 
-source $SWEIBO_DIR/random
 source $SWEIBO_DIR/common
 
 CLIENT_ID='2276631549'

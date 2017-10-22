@@ -20,4 +20,4 @@ fi
 response=$(curl -s "https://api.weibo.com/oauth2/revokeoauth2" -d "$params")
 
 echo $response | check_error || exit 1
-echo $response | jq
+echo $response
