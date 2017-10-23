@@ -3,16 +3,21 @@
 export SWEIBO_DIR
 export SWEIBO_MODULE_DIR
 export SWEIBO_CONFIG_DIR
+export SWEIBO_TEMP_DIR
 export ACCESS_TOKEN
 
 BIN_FILE=$(readlink -f "$0")
 SWEIBO_DIR=$(dirname "$BIN_FILE")
 SWEIBO_MODULE_DIR="$SWEIBO_DIR/modules"
 SWEIBO_CONFIG_DIR="$HOME/.sweibo"
+SWEIBO_TEMP_DIR="$SWEIBO_CONFIG_DIR/tmp"
 AUTH_FILE="$SWEIBO_CONFIG_DIR/auth"
 
-if [[ ! ( -d $SWEIBO_CONFIG_DIR ) ]]; then
+if [ ! -d $SWEIBO_CONFIG_DIR ]; then
     mkdir "$SWEIBO_CONFIG_DIR"
+fi
+if [ ! -d $SWEIBO_TEMP_DIR ]; then
+    mkdir "$SWEIBO_TEMP_DIR"
 fi
 
 function print_usage()
