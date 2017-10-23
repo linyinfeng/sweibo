@@ -28,6 +28,7 @@ options="$options -c $count"
 type="home"
 if [ -n "$1" ]; then type="$1"; fi
 time=$(date | tr ' ' '-')
+if [ ! -f "$info_file" ]; then touch "$info_file"; fi
 file_type=$(awk '$1=="type" {print $2}' "$info_file")
 file_page=$(awk '$1=="page" {print $2}' "$info_file")
 file_time=$(awk '$1=="time" {print $2}' "$info_file")
