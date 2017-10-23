@@ -5,6 +5,11 @@ source "$SWEIBO_DIR/presentation"
 
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
 
+if [ ! -f "$status_file" ]; then
+    echo -e "\e[31mNo timeline viewed\e[0m"
+    exit 1
+fi
+
 comments_file="$SWEIBO_CONFIG_DIR/comments_file"
 info_file="$SWEIBO_CONFIG_DIR/comments_info"
 
