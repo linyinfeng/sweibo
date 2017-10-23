@@ -13,11 +13,11 @@ while getopts t FLAG; do
 done
 
 if [ "$test" = "true" ]; then
-    echo "curl -s \"https://api.weibo.com/2/account/get_uid.json\" -d \"$params\""
+    echo "curl -s \"https://api.weibo.com/2/account/get_uid.json?$params\""
     exit 1
 fi
 
-response=$(curl -s "https://api.weibo.com/2/account/get_uid.json" -d "$params")
+response=$(curl -s "https://api.weibo.com/2/account/get_uid.json?$params")
 
 echo "$response" | check_error || exit 1
 echo "$response"
