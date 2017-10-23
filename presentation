@@ -16,15 +16,18 @@ function display_user {
 function display_status {
     cols=$(tput cols)
 
-    printf " - %s\n" $(echo "$data" | jq -r ".id")
+
 
     local data=$1
+    local extra_lead=$2
     local user_data=$(echo "$data" | jq ".user")
-    display_user_brief "$user_data"
+
+    printf "$extra_lead%s\n" $(echo "$data" | jq -r ".id")
+    display_user_brief "$user_data" | sed 's/^/'$extra_lead'/g'
 
     #echo -en "\e[1m"
     # delete U+200B at end of message
-    echo -en "$(echo "$data" | jq -r ".text" | sed 's/^/    \\e[1m/g' | sed 's/'$(echo -ne '\u200B')'*$//g')"
+    echo -en "$(echo "$data" | jq -r ".text" | sed 's/^/    \\e[1m/g' | sed 's/'$(echo -ne '\u200B')'*$//g')" | sed 's/^/'$extra_lead'/g'
     echo -e "\e[0m"
 
     
@@ -33,20 +36,30 @@ function display_status {
     if [ "$pic" != null ]; then
         local pic_width
         let "pic_width = cols / 2"
-        echo "    Picture: $original_pic"
+        echo -e "$extra_lead    Picture: $original_pic"
         temp_file=$(mktemp "/tmp/sweibo-$USER-$UID.XXXXXXXXXXX")
         curl -s "$pic" -o $temp_file
         if [ -f "/usr/bin/catimg" ]; then
-            catimg -w "$pic_width" "$temp_file" | sed 's/^/            /g'
+            catimg -w "$pic_width" "$temp_file" | sed 's/^/'$extra_lead'            /g'
         elif [ -f "$SWEIBO_DIR/catimg" ]; then
-            "$SWEIBO_DIR/catimg" -w "$pic_width" "$temp_file" | sed 's/^/            /g'
+            "$SWEIBO_DIR/catimg" -w "$pic_width" "$temp_file" | sed 's/^/'$extra_lead'            /g'
         fi
         rm "$temp_file"
     fi
+    echo
+
+    # retweeted_status
+    local retweeted_status=$(echo "$data" | jq -r ".retweeted_status")
+    if [ -n "$retweeted_status" -a "$retweeted_status" != "null" ]; then
+        breakline
+        display_status "$retweeted_status" '\t'
+        breakline
+    fi
+    echo
 
     local reposts_count=$(echo "$data" | jq -r ".reposts_count")
     local comments_count=$(echo "$data" | jq -r ".comments_count")
-    printf "\n%${cols}s\n" "Reposts: $reposts_count, Comments: $comments_count"
+    printf "%${cols}s\n" "Reposts: $reposts_count, Comments: $comments_count"
     local date=$(echo "$data" | jq -r ".created_at")
     printf "%${cols}s\n" "Created at $date"
 }
