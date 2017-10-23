@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source $SWEIBO_DIR/presentation
-
 # | check_error || exit 1
 function check_error() {
     local error_msg=$(jq ".error")

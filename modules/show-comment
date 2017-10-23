@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source "$SWEIBO_DIR/common"
+source "$SWEIBO_DIR/presentation"
 
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
 
