@@ -1,1 +1,24 @@
 #!/bin/bash
+
+source "$SWEIBO_DIR/common"
+source "$SWEIBO_DIR/presentation"
+
+temp_file=$(mktemp)
+vim "$temp_file"
+text=$(cat "$temp_file" | sed '$a ---- From client https://github.com/linyinfeng/sweibo')
+
+breakline
+echo -e "\e[1m$text\e[0m"
+breakline
+echo -n "Create status? [y/n] "
+read confirm
+
+if [ "$confirm" = "y" ]; then
+    response=$(echo "$text" | "$SWEIBO_MODULE_DIR/api/statuses/share")
+    if [ -z "$response" ]; then exit 1; fi
+    breakline
+    display_status "$response"
+    breakline
+fi
+
+rm "$temp_file"
