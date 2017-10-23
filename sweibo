@@ -87,8 +87,14 @@ if [ -z $1 ]; then
     handle_input "help"
 elif [[ ( -n "$1" ) && ( "$1" = "shell" ) ]]; then
     auth_until_valid
+
+    #wordlist=$(find "$SWEIBO_MODULE_DIR" -type f -name "*" | sed 's/^.//g' | sed 's/^\///g')
+    #complete -W "$(echo "$comp" | xargs)" -E
+    cd "$SWEIBO_MODULE_DIR" # for compeletion
+    #PWD="$SWEIBO_MODULE_DIR" 
+
     while true; do
-        read -ep '(SWeibo) ' input
+        read -e -p '(SWeibo) ' input
         handle_input $input
     done
 else

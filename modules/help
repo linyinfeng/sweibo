@@ -15,6 +15,11 @@ Sweibo usage:
             Show this message
         home [options]
             Alias of timeline [options] home
+        new-status
+            Create new status
+        new-comment NUM
+            Create new comment
+            NUM     - status number in timeline
         shell
             Enter shell mode
         show-comments [options] NUM
