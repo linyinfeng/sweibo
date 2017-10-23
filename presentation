@@ -5,7 +5,7 @@ function display_user_brief() {
     local name=$(echo "$data" | jq -r ".screen_name")
     local id=$(echo "$data" | jq -r ".id")
     echo -en "User: \e[36;1m$name\e[0m"
-    local description=$(echo "$data" | jq -r ".description" | tr '\n\e' '  ')
+    local description=$(echo "$data" | jq -r ".description" | tr '\n\r' '  ')
     echo -en "\t$description\n\n"
 }
 
