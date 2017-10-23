@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source $SWEIBO_DIR/common
+
+params="access_token=$ACCESS_TOKEN"
+test=false
+
+while getopts i:c:t FLAG; do
+    case $FLAG in
+        i) params="$params&id=$OPTARG";;    # id
+        c) params="$params&comment=$OPTARG";; # comment
+        t) test=true;;
+        *) :;;
+    esac
+done
+
+if [ $test = true ]; then
+    echo "curl -s \"https://api.weibo.com/2/comments/show.json\" --data-urlencode \"$params\")"
+    exit 1
+fi
+
+response=$(curl -s "https://api.weibo.com/2/comments/show.json" --data-urlencode "$params")
+
+echo "$response" | check_error || exit 1
+echo "$response"

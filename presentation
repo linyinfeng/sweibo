@@ -16,13 +16,16 @@ function display_user {
 function display_status {
     cols=$(tput cols)
 
+    printf " - %s\n" $(echo "$data" | jq -r ".id")
+
     local data=$1
     local user_data=$(echo "$data" | jq ".user")
     display_user_brief "$user_data"
-    echo -en "\e[1m"
+
+    #echo -en "\e[1m"
     # delete U+200B at end of message
-    echo "$data" | jq -r ".text" | sed 's/^/    /g' | sed "s/$(echo -ne '\u200B')*\$//g"
-    echo -en "\e[0m"
+    echo -en "$(echo "$data" | jq -r ".text" | sed 's/^/    \\e[1m/g' | sed 's/'$(echo -ne '\u200B')'*$//g')"
+    echo -e "\e[0m"
 
     
     local original_pic=$(echo "$data" | jq -r ".original_pic")
