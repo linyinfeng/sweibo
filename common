@@ -14,9 +14,6 @@ function breakline() {
 
     local cols=$(tput cols)
 
-    local to_print
-    let 'to_print = cols - col_now'
-
     local i=0
     while (( i < cols )); do
         echo -n "-"
