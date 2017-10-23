@@ -42,7 +42,10 @@ function display_status {
     local data=$1
     local user_data=$(echo "$data" | jq ".user")
 
-    printf "%s\n" $(echo "$data" | jq -r ".id")
+
+    id=$(echo "$data" | jq -r ".id")
+    uid=$(echo "$user_data" | jq -r ".id")
+    printf "http://api.weibo.com/2/statuses/go?access_token=%s&id=%s&uid=%s\n" "$ACCESS_TOKEN" "$id" "$uid"
     display_user_brief "$user_data" | sed 's/^//g'
 
     #echo -en "\e[1m"
