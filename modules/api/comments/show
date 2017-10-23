@@ -7,7 +7,7 @@ test=false
 
 while getopts i:c:p:t FLAG; do
     case $FLAG in
-        c) params="$params&id=$OPTARG";;    # count
+        i) params="$params&id=$OPTARG";;    # id
         c) params="$params&count=$OPTARG";; # count
         p) params="$params&page=$OPTARG";;  # page
         t) test=true;;
@@ -16,11 +16,11 @@ while getopts i:c:p:t FLAG; do
 done
 
 if [ $test = true ]; then
-    echo "curl -s \"https://api.weibo.com/2/statuses/home_timeline.json?$params\""
+    echo "curl -s \"https://api.weibo.com/2/comments/show.json?$params\""
     exit 1
 fi
 
-response=$(curl -s "https://api.weibo.com/2/statuses/home_timeline.json?$params")
+response=$(curl -s "https://api.weibo.com/2/comments/show.json?$params")
 
 echo "$response" | check_error || exit 1
 echo "$response"

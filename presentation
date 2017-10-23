@@ -46,5 +46,16 @@ function display_status {
 }
 
 function display_comment {
-    :
+    cols=$(tput cols)
+    local data=$1
+    local user_data=$(echo "$data" | jq ".user")
+    display_user_brief "$user_data"
+
+    echo -en "\e[1m"
+    # delete U+200B at end of message
+    echo "$data" | jq -r ".text" | sed 's/^/    /g' # | sed "s/$(echo -ne '\u200B')*\$//g"
+    echo -en "\e[0m"
+
+    local date=$(echo "$data" | jq -r ".created_at")
+    printf "\n%${cols}s\n" "Created at $date"
 }
