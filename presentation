@@ -55,7 +55,6 @@ function display_status {
         display_status "$retweeted_status" '\t'
         breakline
     fi
-    echo
 
     local reposts_count=$(echo "$data" | jq -r ".reposts_count")
     local comments_count=$(echo "$data" | jq -r ".comments_count")

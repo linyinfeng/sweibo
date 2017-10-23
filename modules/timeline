@@ -76,7 +76,7 @@ function main()
 
         data=$(sed "${i}q;d" "$status_file")
         display_status "$data"
-        breakline "\e[32m"
+        breakline "\e[32;1m"
         let ++i
     done
 
