@@ -1,3 +1,37 @@
 #!/bin/bash
 
-echo -e "Sweibo usage:\n\tTODO" # TODO
+cat << EOF
+Sweibo usage:
+    sweibo [command] [options]
+    commands:
+        auth [force]
+            Check authorization
+            force   - force redo authorization
+        check
+            Check authorization
+        clean
+            Clean all files created
+        help
+            Show this message
+        home [options]
+            Alias of timeline [options] home
+        shell
+            Enter shell mode
+        show-comments [options] NUM
+            Show comments
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+            NUM     - status number in timeline
+        timeline [options] [TYPE]
+            Show timeline
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+            TYPE    - timeline type (home, public)
+    examples:
+        sweibo auth             - check login status
+        sweibo timeline         - show home timeline
+        sweibo show-comments 1  - show comments for the 1st status in timeline
+                                  last viewed
+EOF
