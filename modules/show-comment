@@ -76,14 +76,18 @@ fi
 
 comments_count=$(wc -l "$comments_file" | awk '{print $1}')
 
-function main()
+function info()
 {
     echo -e "\e[32;1mStatus: $file_id - page $file_page ( $comments_count / $file_count per page )\e[0m"
     echo -e "\e[32;1mUpdated at: $(echo "$file_time" | tr '-' ' ')\e[0m"
-    breakline "\e[32m"
+}
 
+function main()
+{
     display_status "$status"
 
+    breakline "\e[32m"
+    info
     breakline "\e[32m"
 
     i=1
@@ -96,5 +100,7 @@ function main()
 
         let ++i
     done
+
+    info
 }
 main | less -R

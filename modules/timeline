@@ -14,12 +14,8 @@ count="20"
 while getopts rc:p: FLAG; do
     case $FLAG in
         r) refresh="true";;
-        c)
-            count="$OPTARG"
-            ;;
-        p)
-            page="$OPTARG"
-            ;;
+        c) count="$OPTARG" ;;
+        p) page="$OPTARG";;
         *) :;;
     esac
 done
@@ -60,10 +56,15 @@ fi
 
 statuses_count=$(wc -l "$status_file" | awk '{print $1}')
 
-function main()
+function info()
 {
     echo -e "\e[32;1mTimeline: $file_type - page $file_page ( $statuses_count / $file_count per page )\e[0m"
     echo -e "\e[32;1mUpdated at: $(echo "$file_time" | tr '-' ' ')\e[0m"
+}
+
+function main()
+{
+    info
     breakline "\e[32m"
 
     i=1
@@ -75,5 +76,7 @@ function main()
         breakline "\e[32m"
         let ++i
     done
+
+    info
 }
 main | less -R

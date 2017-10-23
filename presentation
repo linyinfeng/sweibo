@@ -31,7 +31,7 @@ function display_status {
         local pic_width
         let "pic_width = cols / 2"
         echo "    Picture: $original_pic"
-        temp_file=$(mktemp)
+        temp_file=$(mktemp /tmp/sweibo-$USER-$UID.XXXXXXXXXXX)
         curl -s "$pic" -o $temp_file
         if [ -f "/usr/bin/catimg" ]; then
             catimg -w $pic_width $temp_file | sed 's/^/            /g'
