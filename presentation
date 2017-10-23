@@ -41,8 +41,11 @@ function display_status {
         rm "$temp_file"
     fi
 
+    local reposts_count=$(echo "$data" | jq -r ".reposts_count")
+    local comments_count=$(echo "$data" | jq -r ".comments_count")
+    printf "\n%${cols}s\n" "Reposts: $reposts_count, Comments: $comments_count"
     local date=$(echo "$data" | jq -r ".created_at")
-    printf "\n%${cols}s\n" "Created at $date"
+    printf "%${cols}s\n" "Created at $date"
 }
 
 function display_comment {
