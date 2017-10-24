@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-source "$SWEIBO_DIR/presentation"
-source "$SWEIBO_DIR/common"
+source "$SWEIBO_FACILITY_DIR/presentation"
+source "$SWEIBO_FACILITY_DIR/common"
 
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
 info_file="$SWEIBO_CONFIG_DIR/timeline_info"

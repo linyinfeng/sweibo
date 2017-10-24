@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $SWEIBO_DIR/common
+source "$SWEIBO_FACILITY_DIR/common"
 
 echo "Checking authorization validation..."
 

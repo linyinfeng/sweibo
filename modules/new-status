@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "$SWEIBO_DIR/common"
-source "$SWEIBO_DIR/presentation"
+source "$SWEIBO_FACILITY_DIR/common"
+source "$SWEIBO_FACILITY_DIR/presentation"
 
 temp_file=$(mktemp)
 vim "$temp_file"
