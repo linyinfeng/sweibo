@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-source "$SWEIBO_FACILITY_DIR/presentation"
-source "$SWEIBO_FACILITY_DIR/common"
+source "$SWEIBO_FACILITIES_DIR/presentation"
+source "$SWEIBO_FACILITIES_DIR/common"
 
 status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
 info_file="$SWEIBO_CONFIG_DIR/timeline_info"
@@ -42,7 +42,7 @@ if [ ! -f "$status_file" ]; then refresh="true"; fi
 if [ $refresh = "true" ]; then
     echo "Fetching..."
 
-    response=$("$SWEIBO_MODULE_DIR/api/statuses/${type}_timeline" $options)
+    response=$("$SWEIBO_MODULES_DIR/api/statuses/${type}_timeline" $options)
     if [ -z "$response" ]; then
         echo -e "\e[31mFailed to get timeline, exiting...\e[0m"
         exit 1

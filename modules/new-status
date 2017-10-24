@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "$SWEIBO_FACILITY_DIR/common"
-source "$SWEIBO_FACILITY_DIR/presentation"
+source "$SWEIBO_FACILITIES_DIR/common"
+source "$SWEIBO_FACILITIES_DIR/presentation"
 
 temp_file=$(mktemp)
 vim "$temp_file"
@@ -12,13 +12,13 @@ echo -e "\e[1m$text\e[0m"
 breakline
 echo -n "Create status? [y/n] "
 read confirm
-
-if [ "$confirm" = "y" ]; then
-    response=$(echo "$text" | "$SWEIBO_MODULE_DIR/api/statuses/share")
-    if [ -z "$response" ]; then exit 1; fi
-    breakline
-    display_status "$response"
-    breakline
+if [ "$confirm" = "n" ]; then
+    exit 1
 fi
+response=$(echo "$text" | "$SWEIBO_MODULES_DIR/api/statuses/share")
+if [ -z "$response" ]; then exit 1; fi
+breakline
+display_status "$response"
+breakline
 
 rm "$temp_file"

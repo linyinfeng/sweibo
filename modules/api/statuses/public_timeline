@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$SWEIBO_FACILITY_DIR/common"
+source "$SWEIBO_FACILITIES_DIR/common"
 
 params="access_token=$ACCESS_TOKEN"
 test=false

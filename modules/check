@@ -1,10 +1,10 @@
 #!/bin/bash
 
-source "$SWEIBO_FACILITY_DIR/common"
+source "$SWEIBO_FACILITIES_DIR/common"
 
 echo "Checking authorization validation..."
 
-response=$("$SWEIBO_MODULE_DIR/api/oauth2/get_token_info")
+response=$("$SWEIBO_MODULES_DIR/api/oauth2/get_token_info")
 if [ -z "$response" ]; then
     echo -e "\e[31mInvalid authorization\e[0m"
     exit 1

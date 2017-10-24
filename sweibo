@@ -1,16 +1,16 @@
 #!/bin/bash
 
 export SWEIBO_DIR
-export SWEIBO_MODULE_DIR
+export SWEIBO_MODULES_DIR
 export SWEIBO_CONFIG_DIR
-export SWEIBO_FACILITY_DIR
+export SWEIBO_FACILITIES_DIR
 export SWEIBO_TEMP_DIR
 export ACCESS_TOKEN
 
 BIN_FILE=$(readlink -f "$0")
 SWEIBO_DIR=$(dirname "$BIN_FILE")
-SWEIBO_FACILITY_DIR="$SWEIBO_DIR/facilities"
-SWEIBO_MODULE_DIR="$SWEIBO_DIR/modules"
+SWEIBO_FACILITIES_DIR="$SWEIBO_DIR/facilities"
+SWEIBO_MODULES_DIR="$SWEIBO_DIR/modules"
 SWEIBO_CONFIG_DIR="$HOME/.sweibo"
 SWEIBO_TEMP_DIR="$SWEIBO_CONFIG_DIR/tmp"
 AUTH_FILE="$SWEIBO_CONFIG_DIR/auth"
@@ -38,7 +38,7 @@ function clean()
 
 function auth()
 {
-    "$SWEIBO_MODULE_DIR/auth" "$AUTH_FILE"
+    "$SWEIBO_MODULES_DIR/auth" "$AUTH_FILE"
 }
 
 function get_access_token()
@@ -46,7 +46,7 @@ function get_access_token()
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    if "$SWEIBO_MODULE_DIR/check"; then
+    if "$SWEIBO_MODULES_DIR/check"; then
         :
     else
         ACCESS_TOKEN=''
@@ -80,7 +80,7 @@ function handle_input()
     '') :;;
     *)
         call=$(echo $input | xargs)
-        (eval "$SWEIBO_MODULE_DIR/$call")
+        (eval "$SWEIBO_MODULES_DIR/$call")
         ;;
     esac
 }
@@ -90,10 +90,10 @@ if [ -z $1 ]; then
 elif [[ ( -n "$1" ) && ( "$1" = "shell" ) ]]; then
     auth_until_valid
 
-    #wordlist=$(find "$SWEIBO_MODULE_DIR" -type f -name "*" | sed 's/^.//g' | sed 's/^\///g')
+    #wordlist=$(find "$SWEIBO_MODULES_DIR" -type f -name "*" | sed 's/^.//g' | sed 's/^\///g')
     #complete -W "$(echo "$comp" | xargs)" -E
-    cd "$SWEIBO_MODULE_DIR" # for compeletion
-    #PWD="$SWEIBO_MODULE_DIR" 
+    cd "$SWEIBO_MODULES_DIR" # for compeletion
+    #PWD="$SWEIBO_MODULES_DIR" 
 
     while true; do
         read -e -p '(SWeibo) ' input
