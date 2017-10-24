@@ -42,6 +42,7 @@ if [ -z "$status_num" ]; then
     echo -e "\e[31mPlease add status number to the end of the argument list\e[0m"
     exit 1
 fi
+
 status=$(sed "${status_num}q;d" "$status_file")
 id=$(echo "$status" | jq -r ".id")
 if [ "$id" = "null" ]; then
@@ -96,7 +97,7 @@ function main()
     info
     breakline "\e[32m"
 
-    i=1
+    local i=1
     while (( i <= comments_count )); do
         echo -en "\e[1m[$i]\e[0m  "
 

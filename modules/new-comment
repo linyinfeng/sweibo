@@ -1,1 +1,56 @@
 #!/bin/bash
+
+source "$SWEIBO_DIR/common"
+source "$SWEIBO_DIR/presentation"
+
+status_file="$SWEIBO_CONFIG_DIR/timeline_statuses"
+
+if [ ! -f "$status_file" ]; then
+    echo -e "\e[31mNo timeline viewed\e[0m"
+    exit 1
+fi
+status_num="$1"
+if [ -z "$status_num" ]; then
+    echo -e "\e[31mPlease add status number to the end of the argument list\e[0m"
+    exit 1
+fi
+status=$(sed "${status_num}q;d" "$status_file")
+id=$(echo "$status" | jq -r ".id")
+if [ "$id" = "null" ]; then
+    echo -e "\e[31mNo such status\e[0m"
+    exit 1
+fi
+
+breakline
+display_status "$status"
+breakline
+
+echo -n "Start editing comment? [y/n] "
+read confirm
+if [ "$confirm" = "n" ]; then
+    exit 1
+fi
+
+temp_file=$(mktemp)
+vim "$temp_file"
+text=$(cat "$temp_file")
+
+breakline
+echo -e "\e[1m$text\e[0m"
+breakline
+echo -n "Create comment? [y/n] "
+read confirm
+
+if [ "$confirm" = "y" ]; then
+    response=$(echo "$text" | "$SWEIBO_MODULE_DIR/api/comments/create" -i "$id")
+    if [ -z "$response" ]; then
+        echo -e "\e[31mFailed to sent comment\e[0m"
+        exit 1
+    fi
+    breakline
+    echo "$response" > tmp
+    display_comment "$response"
+    breakline
+fi
+
+rm "$temp_file"
