@@ -19,7 +19,7 @@ function display_picture {
 
     local pic_extension_name=$(echo "$pic" | grep -o '\.[[:alpha:]]*$')
     local pic_file_name=$(echo "$pic" | sed 's/.*\/\([[:alnum:]]*\.[[:alpha:]]*\)$/\1/g')
-    echo $pic_file_name
+    
 
     if [ "$pic_extension_name" != ".gif" ]; then
         local pic_width
@@ -35,6 +35,8 @@ function display_picture {
         elif [ -f "$SWEIBO_DIR/catimg" ]; then
             "$SWEIBO_DIR/catimg" -w "$pic_width" "$temp_file"
         fi
+        
+        echo $pic_file_name
     fi
 }
 
@@ -54,7 +56,13 @@ function display_status {
     echo -e "\e[0m"
 
     local pic=$(echo "$data" | jq -r ".thumbnail_pic")
-    local pic_urls=$(echo "$data" | jq -r '.pic_urls[].thumbnail_pic' | sed 's/thumbnail/large/g')
+    local pic_urls_raw=$(echo "$data" | jq -r '.pic_urls')
+    local pic_ids_raw=$(echo "$data" | jq -r '.pic_ids')
+    if [ "$pic_urls_raw" != "null" ]; then
+        local pic_urls=$(echo "$pic_urls_raw" | jq -r '.[].thumbnail_pic' | sed 's/thumbnail/large/g')
+    elif [ "$pic_ids_raw" != "null" ]; then
+        local pic_urls=$(echo "$pic_ids_raw" | jq -r '.[]' | sed 's/^/http:\/\/wx1.sinaimg.cn\/large\//g')
+    fi
 
     if [ "$pic" != "null" ]; then
         echo "$pic_urls" | sed 's/^/    Picture: /g'
@@ -65,9 +73,10 @@ function display_status {
     # retweeted_status
     local retweeted_status=$(echo "$data" | jq -r ".retweeted_status")
     if [ -n "$retweeted_status" -a "$retweeted_status" != "null" ]; then
-        breakline
+        breakline "" "."
+        echo -en "\e[1m[Retweet] \e[0m"
         display_status "$retweeted_status"
-        breakline
+        breakline "" "."
     fi
 
     local cols=$(tput cols)
