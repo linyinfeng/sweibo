@@ -27,6 +27,7 @@ breakline
 display_status "$status"
 breakline
 display_comment "$comment"
+breakline
 
 echo -n "Start editing comment? [y/n] "
 read confirm
