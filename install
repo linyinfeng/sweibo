@@ -1,0 +1,18 @@
+#!/bin/bash
+
+bin_file=$(readlink -f "$0")
+sweibo_dir=$(dirname "$bin_file")
+wordlist=$(find "$sweibo_dir/modules" -type f -name "*" | sed 's/.*\/modules\/\(.*\)/\1/g' | tr '\n' ' ')
+
+bash_rc_file=$HOME/.bashrc
+
+sed -n -i '/^# SWEIBO - DO NOT EDIT$/,/^# END SWEIBO - DO NOT EDIT$/d;:1;p' "$bash_rc_file"
+
+cat >> "$bash_rc_file" << EOF
+# SWEIBO - DO NOT EDIT
+export PATH="\$PATH:$sweibo_dir"
+complete -W "$wordlist" sweibo
+# END SWEIBO - DO NOT EDIT
+EOF
+
+echo "Please run \"source .bashrc\" or relogin"
