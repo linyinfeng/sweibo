@@ -1,0 +1,3 @@
+#!/bin/bash
+
+"$SWEIBO_MODULES_DIR/timeline" $@ user

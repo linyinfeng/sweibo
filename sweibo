@@ -62,8 +62,13 @@ function handle_input()
         ;;
     '') :;;
     *)
-        call=$(echo $input | xargs)
-        (eval "$SWEIBO_MODULES_DIR/$call")
+        call=$(echo "$input" | xargs)
+        module_file_path="$SWEIBO_MODULES_DIR/$(echo "$call" | awk '{print $1}')"
+        if [ -f $module_file_path ]; then
+            (eval "$SWEIBO_MODULES_DIR/$call")
+        else
+            echo -e "\e[31mModule not found\e[0m"
+        fi
         ;;
     esac
 }
