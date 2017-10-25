@@ -9,26 +9,3 @@ function check_error() {
     fi
 }
 
-# breakline "$HEAD" "$CHAR" "$END"
-function breakline() {
-    echo -en "$1"
-
-    local cols=$(tput cols)
-
-    local c="-"
-    if [ -n "$2" ]; then
-        c="$2"
-    fi
-
-    local i=0
-    while (( i < cols )); do
-        echo -n "$c"
-        let ++i
-    done
-
-    if [ -n "$3" ]; then
-        echo -e "$3"
-    else
-        echo -e "\e[0m"
-    fi
-}
