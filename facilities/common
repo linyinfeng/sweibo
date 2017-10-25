@@ -2,8 +2,8 @@
 
 # | check_error || exit 1
 function check_error() {
-    local error_msg=$(jq ".error")
-    if [[ ( -n "$error_msg" ) && ( $error_msg != null ) ]]; then
+    local error_msg=$(jq -r ".error")
+    if [ "$error_msg" != "null" ]; then
         >&2 printf "\e[31mError: %s\n\e[0m" "$error_msg"
         exit 1
     fi

@@ -5,7 +5,7 @@ source "$SWEIBO_FACILITIES_DIR/presentation"
 
 temp_file=$(mktemp)
 vim "$temp_file"
-text=$(cat "$temp_file" | sed '$a ---- From client https://github.com/linyinfeng/sweibo')
+text=$(cat "$temp_file" | sed '$a ---- From sweibo https://github.com/linyinfeng/sweibo')
 
 breakline
 echo -e "\e[1m$text\e[0m"

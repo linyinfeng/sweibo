@@ -11,6 +11,7 @@ function display_user_brief() {
 
 function display_user {
     local data=$1
+    # TODO
 }
 
 function display_picture {
@@ -99,4 +100,28 @@ function display_comment {
 
     local date=$(echo "$data" | jq -r ".created_at")
     printf "\n%${cols}s\n" "Created at $date"
+}
+
+# breakline "$HEAD" "$CHAR" "$END"
+function breakline() {
+    echo -en "$1"
+
+    local cols=$(tput cols)
+
+    local c="-"
+    if [ -n "$2" ]; then
+        c="$2"
+    fi
+
+    local i=0
+    while (( i < cols )); do
+        echo -n "$c"
+        let ++i
+    done
+
+    if [ -n "$3" ]; then
+        echo -e "$3"
+    else
+        echo -e "\e[0m"
+    fi
 }

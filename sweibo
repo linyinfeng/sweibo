@@ -7,72 +7,55 @@ export SWEIBO_FACILITIES_DIR
 export SWEIBO_TEMP_DIR
 export ACCESS_TOKEN
 
+# Define paths of exported dirs
 BIN_FILE=$(readlink -f "$0")
 SWEIBO_DIR=$(dirname "$BIN_FILE")
 SWEIBO_FACILITIES_DIR="$SWEIBO_DIR/facilities"
 SWEIBO_MODULES_DIR="$SWEIBO_DIR/modules"
 SWEIBO_CONFIG_DIR="$HOME/.sweibo"
 SWEIBO_TEMP_DIR="$SWEIBO_CONFIG_DIR/tmp"
+
+# The file used by modules/auth to store auth info
 AUTH_FILE="$SWEIBO_CONFIG_DIR/auth"
 
-if [ ! -d $SWEIBO_CONFIG_DIR ]; then
+if [ ! -d "$SWEIBO_CONFIG_DIR" ]; then
     mkdir "$SWEIBO_CONFIG_DIR"
 fi
-if [ ! -d $SWEIBO_TEMP_DIR ]; then
+if [ ! -d "$SWEIBO_TEMP_DIR" ]; then
     mkdir "$SWEIBO_TEMP_DIR"
 fi
-
-function print_usage()
-{
-    echo "Usage: TODO"
-}
-
-function clean()
-{
-    if [ -d "$SWEIBO_CONFIG_DIR" ]; then
-        rm -rv "$SWEIBO_CONFIG_DIR"
-    else
-        echo "Already clean"
-    fi
-}
-
-function auth()
-{
-    "$SWEIBO_MODULES_DIR/auth" "$AUTH_FILE"
-}
 
 function get_access_token()
 {
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
-    if "$SWEIBO_MODULES_DIR/check"; then
-        :
-    else
-        ACCESS_TOKEN=''
-    fi
+    # If check failed, assign access_token to ''
+    "$SWEIBO_MODULES_DIR/check" || ACCESS_TOKEN=''
 }
 
 function auth_until_valid()
 {
     get_access_token
-    while [ -z $ACCESS_TOKEN ];
+    while [ -z "$ACCESS_TOKEN" ];
     do
         echo -e "\e[32mPlease follow the instructions to authorize the tool\e[0m"
-        auth
+        "$SWEIBO_MODULES_DIR/auth" "$AUTH_FILE"
         get_access_token
     done
-    printf "Access token loaded: %s\n" $ACCESS_TOKEN
+    printf "Access token loaded: %s\n" "$ACCESS_TOKEN"
 }
 
 function handle_input()
 {
     input=$@
-    case $(echo $input | awk '{print $1}') in
+    case $(echo "$input" | awk '{print $1}') in
     q|quit|exit) exit;;
     auth)
-        second=$(echo $input | awk '{print $2}')
-        if [[ ( -n "$second" ) && ( $second = "force" ) ]]; then
+        # If second parameter is 'force', remove the existing auth file
+        # and access_token
+        second=$(echo "$input" | awk '{print $2}')
+        if [ "$second" = "force" ]; then
             rm $AUTH_FILE; ACCESS_TOKEN=""
         fi
         auth_until_valid
@@ -85,9 +68,9 @@ function handle_input()
     esac
 }
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
     handle_input "help"
-elif [[ ( -n "$1" ) && ( "$1" = "shell" ) ]]; then
+elif [ "$1" = "shell" ]; then
     auth_until_valid
 
     #wordlist=$(find "$SWEIBO_MODULES_DIR" -type f -name "*" | sed 's/^.//g' | sed 's/^\///g')
@@ -101,7 +84,7 @@ elif [[ ( -n "$1" ) && ( "$1" = "shell" ) ]]; then
     done
 else
     # Do not check
-    if [ -f $AUTH_FILE ]; then
+    if [ -f "$AUTH_FILE" ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
     handle_input $@

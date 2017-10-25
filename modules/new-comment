@@ -44,7 +44,7 @@ read confirm
 if [ "$confirm" = "n" ]; then
     exit 1
 fi
-response=$(echo "$text" | "$SWEIBO_MODULES_DIR/api/comments/reply" -i "$id")
+response=$(echo "$text" | "$SWEIBO_MODULES_DIR/api/comments/create" -i "$id")
 if [ -z "$response" ]; then
     echo -e "\e[31mFailed to sent comment\e[0m"
     exit 1
@@ -52,6 +52,5 @@ fi
 breakline
 display_comment "$response"
 breakline
-
 
 rm "$temp_file"

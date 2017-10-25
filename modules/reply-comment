@@ -56,5 +56,4 @@ breakline
 display_comment "$response"
 breakline
 
-
 rm "$temp_file"
