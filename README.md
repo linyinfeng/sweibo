@@ -1,6 +1,6 @@
 # SWeibo
 
-### Introduction
+## Introduction
 
 SWeibo is a client of [Sina Weibo](https://weibo.com) which is completely written in **Bash shell script**. It provides easy way accessing to Weibo through command-lines.
 Features include:
@@ -11,15 +11,15 @@ Features include:
  * Send and reply comments
  * Check mentions
 
-### Installation
+## Installation
 
 Just clone this repository and run `./sweibo`, or run `./sweibo-install` to add project directory to PATH.
 
-### Usage
+## Usage
 
 Check `./sweibo help` for details.
 
 
-### Maintainers
+## Maintainers
 
 linyinfeng, ipid, matrixlt...
