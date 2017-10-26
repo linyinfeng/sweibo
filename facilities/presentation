@@ -4,11 +4,9 @@ function display_user_brief() {
     local data=$1
     local name=$(echo "$data" | jq -r ".screen_name")
     local id=$(echo "$data" | jq -r ".id")
-    echo -en "User: \e[36;1m$name\e[0m"
+    echo -en "User: \e[36;1m$name ($id)\e[0m"
     local description=$(echo "$data" | jq -r ".description" | tr '\n\r' '  ')
-    echo -en "\t$description\n"
-    echo -en "ID:$id\n\n"
-
+    echo -en "\t$description\n\n"
 }
 
 function display_user {
@@ -25,7 +23,6 @@ function display_user {
     echo -en "Friends_count: \e[36;1m$friends_count\e[0m\n"
     local statuses_count=$(echo "$data" | jq -r ".statuses_count")
     echo -en "Statuses_count: \e[36;1m$statuses_count\e[0m\n"
-    # TODO
 }
 
 function display_picture {

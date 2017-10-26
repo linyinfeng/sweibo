@@ -37,8 +37,10 @@ function display_unread_count {
         fi
         if [ $commentat -ne 0 ]; then
             notify_text="${notify_text}In-comment at[$commentat]"            
-        fi        
-        echo "You have new $(echo "$notify_text" | sed 's/, $//')"
+        fi
+        if [ -n "$notify_text" ]; then
+            echo "You have new $(echo "$notify_text" | sed 's/, $//')"
+        fi
     fi
 }
 

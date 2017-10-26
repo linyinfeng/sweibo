@@ -10,8 +10,8 @@ uid=$("$SWEIBO_MODULES_DIR/api/account/get_uid" | jq -r ".uid" )
 
 if [ -z "$1" ] ; then 
      options="-u $uid";
-    else 
-     options="-n $1";
+else 
+     options=$@;
 fi     
 ##options="-n $1"
 response=$("$SWEIBO_MODULES_DIR/api/users/show" $options)
