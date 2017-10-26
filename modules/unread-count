@@ -1,14 +1,51 @@
 #!/bin/bash
 
+sweibo_unread_filename='unread_info'
+
+function parse_unread_count {
+    local comment=$(echo "$1" | jq ".cmt")
+    local at=$(echo "$1" | jq ".mention_status")
+    local commentat=$(echo "$1" | jq ".mention_cmt")
+    echo "comment $comment"
+    echo "at $at"
+    echo "commentat $commentat"
+}
+
+function check_not_same_unread_count {
+    if [ ! -f "$SWEIBO_CONFIG_DIR/$sweibo_unread_filename" ]; then
+        return 0
+    fi
+    local original=$(cat "$SWEIBO_CONFIG_DIR/$sweibo_unread_filename")
+    if [ "$original" = "$1" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function display_unread_count {
+    if check_not_same_unread_count "$1"; then
+        local comment=$(echo "$1" | awk '$1=="comment" {print $2}')
+        local at=$(echo "$1" | awk '$1=="at" {print $2}')
+        local commentat=$(echo "$1" | awk '$1=="commentat" {print $2}')
+        local notify_text=''
+        if [ $comment -ne 0 ]; then
+            notify_text="Comment[$comment], "            
+        fi
+        if [ $at -ne 0 ]; then
+            notify_text="${notify_text}At[$at], "            
+        fi
+        if [ $commentat -ne 0 ]; then
+            notify_text="${notify_text}In-comment at[$commentat]"            
+        fi        
+        echo "You have new $(echo "$notify_text" | sed 's/, $//')"
+    fi
+}
+
 response=$("$SWEIBO_MODULES_DIR/api/remind/unread_count")
-if [ -z "$response" ]; then exit 1; fi
 
-mention_status=$(echo "$response" | jq -r ".mention_status")
-mention_comment=$(echo "$response" | jq -r ".mention_cmt")
-other_comment=$(echo "$response" | jq -r ".cmt")
-
-new_comment=$((mention_comment + other_comment))
-new_status=$mention_status
-
-echo "New Status:  $new_status"
-echo "New comment: $new_comment"
+if [ -n "$response" ]; then
+    parse_result=$(parse_unread_count "$response")
+    display_unread_count "$parse_result"
+    echo "$parse_result" > $SWEIBO_CONFIG_DIR/$sweibo_unread_filename
+fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+result=$(./sweibo unread-count)
+if [ -n "$result" ]; then
+    notify-send 'SWeibo' "$result"
+fi
