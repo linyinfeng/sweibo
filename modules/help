@@ -11,32 +11,71 @@ Sweibo usage:
             Check authorization
         clean
             Clean all files created
+        comments [options]
+            Show all comments mention you and sent by youself
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+        comments-by-me [options]
+            Show all comments sent by youself
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+        comments-mentions [options]
+            Show all comments mention you
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+        destroy-comment NUM
+            Destroy a comment sent by youself
+            NUM     - comment number to destroy
         help
             Show this message
-        home [options]
-            Alias of timeline [options] home
-        new-status
-            Create new status
+        logout
+            logout
         new-comment NUM
             Create new comment
             NUM     - status number in timeline
+        new-status
+            Create new status
+        public-timeline [options]
+            Alias for timeline [options] public
+        reply-comment NUM
+            Reply a comment
+            NUM     - comment number to reply
         shell
             Enter shell mode
-        show-comments [options] NUM
-            Show comments
+        show-status-comments [options] NUM
+            Show comments for status
             -r      - refresh
             -c NUM  - count
             -p NUM  - page
             NUM     - status number in timeline
+        statuses-by-me
+            Show statueses sent by youself
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
+        statuses-mentions
+            Show statueses mention you
+            -r      - refresh
+            -c NUM  - count
+            -p NUM  - page
         timeline [options] [TYPE]
             Show timeline
             -r      - refresh
             -c NUM  - count
             -p NUM  - page
             TYPE    - timeline type (home, public)
+        unread-count
+            Show unread count informations
     examples:
-        sweibo auth             - check login status
-        sweibo timeline         - show home timeline
-        sweibo show-comments 1  - show comments for the 1st status in timeline
-                                  last viewed
+        sweibo auth                 - check login status
+        sweibo timeline             - show home timeline
+        sweibo show-comments 1      - show comments for the 1st status in timeline
+                                      last viewed
+        sweibo timeline -c 50 -p 2  - show timeline page 2 with 50 statuses
+        sweibo new-status           - create new status
+        sweibo new-comment 1        - create comment for status 1 last viewed
+        sweibo reply-comment 2      - create comment for comment 2 last viewd
 EOF
