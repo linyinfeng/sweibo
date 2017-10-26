@@ -4,7 +4,7 @@ source "$SWEIBO_FACILITIES_DIR/common"
 source "$SWEIBO_FACILITIES_DIR/presentation"
 
 temp_file=$(mktemp)
-vim "$temp_file"
+"$EDITOR" "$temp_file"
 text=$(cat "$temp_file" | sed '$a ---- From sweibo https://github.com/linyinfeng/sweibo')
 
 breakline

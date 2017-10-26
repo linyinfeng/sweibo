@@ -32,7 +32,7 @@ if [ "$confirm" = "n" ]; then
 fi
 
 temp_file=$(mktemp)
-vim "$temp_file"
+"$EDITOR" "$temp_file"
 text=$(cat "$temp_file")
 
 breakline

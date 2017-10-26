@@ -7,6 +7,10 @@ export SWEIBO_FACILITIES_DIR
 export SWEIBO_TEMP_DIR
 export ACCESS_TOKEN
 
+if [ -z "$EDITOR" ]; then
+    export EDITOR="/usr/bin/vim"
+fi
+
 # Define paths of exported dirs
 BIN_FILE=$(readlink -f "$0")
 SWEIBO_DIR=$(dirname "$BIN_FILE")
