@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source "$SWEIBO_FACILITIES_DIR/common"
+source "$SWEIBO_FACILITIES_DIR/presentation"
+
+comments_file="$SWEIBO_CONFIG_DIR/comments_file"
+
+if [ ! -f "$comments_file" ]; then
+    echo -e "\e[31mNo comment viewed\e[0m"
+    exit 1
+fi
+comment_num="$1"
+if [ -z "$comment_num" ]; then
+    echo -e "\e[31mPlease add comment number to the end of the argument list\e[0m"
+    exit 1
+fi
+comment=$(sed "${comment_num}q;d" "$comments_file")
+status=$(echo "$comment" | jq -r ".status")
+cid=$(echo "$comment" | jq -r ".id")
+uid=$(echo "$comment" | jq -r ".user.id")
+if [ "$cid" = "null" ]; then
+    echo -e "\e[31mNo such comment\e[0m"
+    exit 1
+fi
+if [ "$uid" != "$USER_ID" ]; then
+    echo -e "\e[31mThe comment wasn't sent by you\e[0m"
+    exit 1
+fi
+
+breakline "\e[32;1m" "="
+display_comment "$comment"
+breakline
+display_status "$status"
+breakline "\e[32;1m" "="
+
+echo -n "Destroy the comment? [y/n] "
+read confirm
+if [ "$confirm" = "n" ]; then
+    exit 1
+fi
+
+response=$(echo "$text" | "$SWEIBO_MODULES_DIR/api/comments/destroy" -c "$cid")
+if [ -z "$response" ]; then
+    echo -e "\e[31mFailed to destroy the comment\e[0m"
+    exit 1
+fi
+
+echo -e "\e[32mComment destroyed\e[0m"
+echo "$response" > tmp
