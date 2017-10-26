@@ -1,0 +1,9 @@
+#!/bin/bash
+
+result=$("$SWEIBO_MODULES_DIR/api/oauth2/revokeauth2" | jq -r ".result")
+
+if [ "$result" = "true" ]; then
+    echo -e "\e[32mLogout successfully\e[0m"
+else
+    echo -e "\e[31mFailed to logout, maybe you have been logged out\e[0m"
+fi
