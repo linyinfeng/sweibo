@@ -15,4 +15,4 @@ complete -W "$wordlist" sweibo
 # END SWEIBO - DO NOT EDIT
 EOF
 
-echo "Please run \"source .bashrc\" or relogin"
+echo "Please run \"source ~/.bashrc\" or relogin"

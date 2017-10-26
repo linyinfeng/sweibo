@@ -1,0 +1,91 @@
+#!/bin/bash
+
+
+source "$SWEIBO_FACILITIES_DIR/presentation"
+source "$SWEIBO_FACILITIES_DIR/common"
+
+comments_file="$SWEIBO_CONFIG_DIR/comments_file"
+info_file="$SWEIBO_CONFIG_DIR/comments_info"
+refresh="false"
+
+options=
+
+id="null"
+
+page="1"
+count="20"
+
+while getopts rc:p: FLAG; do
+    case $FLAG in
+        r) refresh="true";;
+        c) count="$OPTARG" ;;
+        p) page="$OPTARG";;
+        *) :;;
+    esac
+done
+shift $((OPTIND-1))
+
+options="$options -p $page"
+options="$options -c $count"
+
+time=$(date | tr ' ' '-')
+if [ ! -f "$info_file" ]; then touch "$info_file"; fi
+file_id=$(awk '$1=="id" {print $2}' "$info_file")
+file_page=$(awk '$1=="page" {print $2}' "$info_file")
+file_time=$(awk '$1=="time" {print $2}' "$info_file")
+file_count=$(awk '$1=="count" {print $2}' "$info_file")
+
+if [ "$file_id" != "$id" ]; then refresh="true"; fi
+if [ "$file_page" != "$page" ]; then refresh="true"; fi
+if [ "$file_count" != "$count" ]; then refresh="true"; fi
+if [ ! -f "$status_file" ]; then refresh="true"; fi
+
+if [ $refresh = "true" ]; then
+    echo "Fetching..."
+
+    response=$("$SWEIBO_MODULES_DIR/api/comments/mentions" $options)
+    if [ -z "$response" ]; then
+        echo -e "\e[31mFailed to get comments, exiting...\e[0m"
+        exit 1
+    fi
+    echo "$response" | jq ".comments[] " -c > "$comments_file"
+    echo "id $id" > "$info_file";  file_id="$id"
+    echo "page $page" >> "$info_file"; file_page="$page"
+    echo "count $count" >> "$info_file"; file_count="$count"
+    echo "time $time" >> "$info_file"; file_time="$time"
+
+    echo "Comments fetched"
+fi
+
+
+comments_count=$(wc -l "$comments_file" | awk '{print $1}')
+
+function info()
+{
+    echo -e "\e[32;1mStatus: mentions - page $file_page ( $comments_count / $file_count per page )\e[0m"
+    echo -e "\e[32;1mUpdated at: $(echo "$file_time" | tr '-' ' ')\e[0m"
+}
+
+function main()
+{
+    info
+    breakline "\e[32;1m" "="
+   
+    local i=1
+    while (( i <= comments_count )); do
+        echo -en "\e[33;1m[$i]\e[0m  "
+
+        data=$(sed "${i}q;d" "$comments_file")
+        display_comment "$data"
+
+        breakline "" "."
+        display_status "$(echo "$data" | jq ".status")"
+
+        breakline "\e[32;1m" "="
+
+        let ++i
+    done
+
+    info
+}
+main | less -R
