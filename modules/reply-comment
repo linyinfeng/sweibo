@@ -11,7 +11,7 @@ if [ ! -f "$comments_file" ]; then
 fi
 comment_num="$1"
 if [ -z "$comment_num" ]; then
-    echo -e "\e[31mPlease add status number to the end of the argument list\e[0m"
+    echo -e "\e[31mPlease add comment number to the end of the argument list\e[0m"
     exit 1
 fi
 comment=$(sed "${comment_num}q;d" "$comments_file")

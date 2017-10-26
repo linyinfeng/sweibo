@@ -6,6 +6,7 @@ export SWEIBO_CONFIG_DIR
 export SWEIBO_FACILITIES_DIR
 export SWEIBO_TEMP_DIR
 export ACCESS_TOKEN
+export USER_ID
 
 if [ -z "$EDITOR" ]; then
     export EDITOR="/usr/bin/vim"
@@ -33,19 +34,21 @@ function get_access_token()
 {
     if [ -f $AUTH_FILE ]; then
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
+        USER_ID=$(awk '$1=="uid" {print $2}' $AUTH_FILE)        
     fi
-    # If check failed, assign access_token to ''
-    "$SWEIBO_MODULES_DIR/check-authorization" || ACCESS_TOKEN=''
 }
 
 function auth_until_valid()
 {
     get_access_token
+    "$SWEIBO_MODULES_DIR/check-authorization" || ACCESS_TOKEN=''
     while [ -z "$ACCESS_TOKEN" ];
     do
         echo -e "\e[32mPlease follow the instructions to authorize the tool\e[0m"
         "$SWEIBO_MODULES_DIR/authorize" "$AUTH_FILE"
+
         get_access_token
+        "$SWEIBO_MODULES_DIR/check-authorization" || ACCESS_TOKEN=''
     done
     printf "Access token loaded: %s\n" "$ACCESS_TOKEN"
 }
@@ -93,8 +96,6 @@ elif [ "$1" = "shell" ]; then
     done
 else
     # Do not check
-    if [ -f "$AUTH_FILE" ]; then
-        ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
-    fi
+    get_access_token
     handle_input $@
 fi
