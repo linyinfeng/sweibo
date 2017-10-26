@@ -1,7 +1,6 @@
-#2696505982 SWeibo
+#SWeibo
 
 ### Introduction
----
 
 SWeibo is a client of [Sina Weibo](https://weibo.com) which is completely written in **Bash shell script**. It provides easy way accessing to Weibo through command-lines.
 Features include:
