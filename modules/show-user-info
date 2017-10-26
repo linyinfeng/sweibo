@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+source "$SWEIBO_FACILITIES_DIR/presentation"
+source "$SWEIBO_FACILITIES_DIR/common"
+
+
+uid=$("$SWEIBO_MODULES_DIR/api/account/get_uid" | jq -r ".uid" )
+##options="-u $uid"
+
+if [ -z "$1" ] ; then 
+     options="-u $uid";
+    else 
+     options="-n $1";
+fi     
+##options="-n $1"
+response=$("$SWEIBO_MODULES_DIR/api/users/show" $options)
+display_user "$response"
