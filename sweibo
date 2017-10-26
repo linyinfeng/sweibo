@@ -31,7 +31,7 @@ function get_access_token()
         ACCESS_TOKEN=$(awk '$1=="access_token" {print $2}' $AUTH_FILE)
     fi
     # If check failed, assign access_token to ''
-    "$SWEIBO_MODULES_DIR/check" || ACCESS_TOKEN=''
+    "$SWEIBO_MODULES_DIR/check-authorization" || ACCESS_TOKEN=''
 }
 
 function auth_until_valid()
@@ -40,7 +40,7 @@ function auth_until_valid()
     while [ -z "$ACCESS_TOKEN" ];
     do
         echo -e "\e[32mPlease follow the instructions to authorize the tool\e[0m"
-        "$SWEIBO_MODULES_DIR/auth" "$AUTH_FILE"
+        "$SWEIBO_MODULES_DIR/authorize" "$AUTH_FILE"
         get_access_token
     done
     printf "Access token loaded: %s\n" "$ACCESS_TOKEN"
@@ -51,7 +51,7 @@ function handle_input()
     input=$@
     case $(echo "$input" | awk '{print $1}') in
     q|quit|exit) exit;;
-    auth)
+    authorize)
         # If second parameter is 'force', remove the existing auth file
         # and access_token
         second=$(echo "$input" | awk '{print $2}')

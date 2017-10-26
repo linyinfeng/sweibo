@@ -4,10 +4,10 @@ cat << EOF
 Sweibo usage:
     sweibo [command] [options]
     commands:
-        auth [force]
+        authorize [force]
             Check authorization
             force   - force redo authorization
-        check
+        check-authorization
             Check authorization
         clean
             Clean all files created
