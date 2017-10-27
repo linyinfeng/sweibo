@@ -1,5 +1,11 @@
 #!/bin/bash
-result=$(./sweibo unread-count)
+BIN_FILE=$(readlink -f "$0")
+SWEIBO_DIR=$(dirname "$BIN_FILE")
+
+result=$("$SWEIBO_DIR/sweibo" unread-count)
 if [ -n "$result" ]; then
+    if [ -r "$HOME/.sweibo/dbus_address" ]; then
+        . "$HOME/.sweibo/dbus_address"
+    fi
     notify-send 'SWeibo' "$result"
 fi
